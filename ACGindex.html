@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Examen</title>
+</head>
+<body>
+    <h2>Andres Conde Garcia</h2>
+    <div id = "search">
+        <form action="" method="post" onsubmit="filtrarPelis(event)">
+            <div>
+                <label for="text">Text: </label>
+                <input type="text" id = "text" required>
+                <br>
+                <input type="checkbox" name="title" id="title">title
+                <input type="checkbox" name="director" id="director">director
+                <input type="checkbox" name="actors" id="actors">actors
+            </div>
+            <div id = "countries">
+                <select name="paises" id="paises">
+                    <option value="allCountries">All countries</option>
+                </select>
+            </div>
+            <div id = "genders">
+                <input type="checkbox" name="genero" id="all">
+                <label>all</label>
+            </div>
+            <div id = "years">
+
+            </div>
+            <div>
+                <button type="submit">Find</button>
+            </div>
+        </form>
+    </div>
+
+    <div id = "resultados">
+    </div>
+
+    <script src="./ACGpelisList.js"></script>
+    <script src="./ACGfiltrospelis.js"></script>
+    <script src="./ACGscrip.js"></script>
+</body>
+</html>
