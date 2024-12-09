@@ -156,28 +156,39 @@ function cargarPelis(pelisFiltradas) {
     });
 };
 
-//cargar detalles
-
 function cargarDetalles(peli) {
     const detallesDiv = document.getElementById(`detalles${peli.Title}`);
 
+    detallesDiv.innerHTML = "";
+
     let botonCerrar = document.createElement("button");
     botonCerrar.textContent = "x";
+    botonCerrar.id = `cerrar${peli.Title}`;
     botonCerrar.addEventListener("click", function () {
         document.getElementById(`div${peli.Title}`).style.backgroundColor = "";
         document.getElementById(`details${peli.Title}`).disabled = false;
-        detallesDiv.innerHTML = ``;
+        detallesDiv.innerHTML = "";
     });
 
-    let parrafo = document.createElement("p");
+    let parrafo = document.createElement("h6");
     parrafo.textContent = "IMDb Rating";
+
     let notaCambio = document.createElement("input");
     notaCambio.type = "number";
     notaCambio.min = 0;
     notaCambio.max = 10;
-    notaCambio.value = peli.imdbRating;
+    notaCambio.value = peli.imdbRating || "";
+    notaCambio.id = `imdbInput${peli.Title}`;
+
     let botonActualizar = document.createElement("button");
     botonActualizar.textContent = "Update";
+    botonActualizar.id = `update${peli.Title}`;
+    botonActualizar.addEventListener("click", () => {
+        const nuevoRating = notaCambio.value;
+        peli.imdbRating = nuevoRating;
+        cargarDetalles(peli);
+    });
+
     let fichaPeli = document.createElement("pre");
     fichaPeli.textContent = JSON.stringify(peli, null, 2);
 
@@ -186,4 +197,7 @@ function cargarDetalles(peli) {
     detallesDiv.appendChild(notaCambio);
     detallesDiv.appendChild(botonActualizar);
     detallesDiv.appendChild(fichaPeli);
-};
+
+    const botonDetalles = document.getElementById(`details${peli.Title}`);
+    botonDetalles.disabled = true;
+}
