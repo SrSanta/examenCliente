@@ -1,4 +1,3 @@
-//cargar las cosas del formulario
 window.onload =
 
     function cargarForm() {
@@ -8,62 +7,90 @@ window.onload =
 
     }
 
-function cargarPaises() {
-    const paisesSelect = document.getElementById("paises");
+    function cargarPaises() {
+        const paisesSelect = document.getElementById("paises");
+    
+        paisesSelect.innerHTML = "<option value='allCountries'>Todos los países</option>";
+    
+        countries.sort().forEach(pais => {
+            let paisOption = document.createElement("option");
+            paisOption.textContent = pais;
+            paisOption.value = pais;
+            paisesSelect.appendChild(paisOption);
+        });
+    }
+    
+    function cargarGeneros() {
+        const generosDiv = document.getElementById("genders");
+    
+        generosDiv.innerHTML = "";
+    
+        let allCheckbox = document.createElement("input");
+        let allLabel = document.createElement("label");
+        allCheckbox.type = "checkbox";
+        allCheckbox.id = "all";
+        allCheckbox.name = "genres";
+        allCheckbox.checked = true;
+        allCheckbox.addEventListener("change", () => {
+            const checkboxes = document.querySelectorAll("input[name='genres']:not(#all)");
+            checkboxes.forEach(checkbox => checkbox.checked = false);
+        });
+        allLabel.textContent = "Todos los géneros";
+    
+        generosDiv.appendChild(allCheckbox);
+        generosDiv.appendChild(allLabel);
+    
+        genders.sort().forEach(genero => {
+            let genderInput = document.createElement("input");
+            let genderLabel = document.createElement("label");
+            genderInput.type = "checkbox";
+            genderInput.id = genero.toLowerCase();
+            genderInput.name = "genres";
+            genderInput.value = genero;
+            genderInput.addEventListener("change", () => {
+                if (genderInput.checked) {
+                    document.getElementById("all").checked = false;
+                }
+            });
+            genderLabel.textContent = genero;
+    
+            generosDiv.appendChild(genderInput);
+            generosDiv.appendChild(genderLabel);
+        });
+    }
 
-    countries.forEach(pais => {
-        let paisOption = document.createElement("option");
-        paisOption.textContent = pais;
-        paisesSelect.appendChild(paisOption);
-    });
-};
+    function cargarAnyos() {
+        const anyoDiv = document.getElementById("years");
+    
+        const parrafoDesde = document.createElement("p");
+        const selectDesde = document.createElement("select");
+        selectDesde.id = "dateFrom";
+        parrafoDesde.textContent = "Year: from ";
+    
+        const parrafoHasta = document.createElement("p");
+        const selectHasta = document.createElement("select");
+        selectHasta.id = "dateTo";
+        parrafoHasta.textContent = " to ";
+    
+        const yearActual = new Date().getFullYear();
+    
+        for (let index = 2000; index <= yearActual; index++) {
+            const optionYear = document.createElement("option");
+            optionYear.textContent = index;
+            optionYear.value = index;
+            selectDesde.appendChild(optionYear);
+    
+            const optionYearClone = optionYear.cloneNode(true);
+            selectHasta.appendChild(optionYearClone);
+        }
+    
+        parrafoDesde.appendChild(selectDesde);
+        anyoDiv.appendChild(parrafoDesde);
+    
+        parrafoHasta.appendChild(selectHasta);
+        anyoDiv.appendChild(parrafoHasta);
+    }
 
-function cargarGeneros() {
-    const generosDiv = document.getElementById("genders");
-
-    genders.sort().forEach(genero => {
-        let genderInput = document.createElement("input");
-        let genderLabel = document.createElement("label");
-        genderInput.type = "checkbox";
-        genderInput.id = `${genero.toLowerCase()}`;
-        genderInput.name = "genero";
-        genderLabel.textContent = `${genero.toLowerCase()}`;
-        generosDiv.appendChild(genderInput);
-        generosDiv.appendChild(genderLabel);
-    });
-}
-
-function cargarAnyos() {
-    const anyoDiv = document.getElementById("years");
-
-    const parrafoDesde = document.createElement("p");
-    const selectDesde = document.createElement("select");
-    parrafoDesde.textContent = "Year: from ";
-
-    const parrafoHasta = document.createElement("p");
-    const selectHasta = document.createElement("select");
-    parrafoHasta.textContent = " to ";
-
-    const yearActual = new Date().getFullYear();
-
-    for (let index = 2000; index <= yearActual; index++) {
-        const optionYear = document.createElement("option");
-        optionYear.textContent = index;
-        optionYear.value = index;
-        selectDesde.appendChild(optionYear);
-
-        const optionYearClone = optionYear.cloneNode(true);
-        selectHasta.appendChild(optionYearClone);
-    };
-
-    parrafoDesde.appendChild(selectDesde);
-    anyoDiv.appendChild(parrafoDesde);
-
-    parrafoHasta.appendChild(selectHasta);
-    anyoDiv.appendChild(parrafoHasta);
-};
-
-//empezamos a filtras cosas de el formulario
 function filtrarPelis(event) {
     event.preventDefault();
     const text = document.getElementById("text").value.toLowerCase();
@@ -72,49 +99,50 @@ function filtrarPelis(event) {
     const actorsChecked = document.getElementById("actors").checked;
     const selectedCountry = document.getElementById("paises").value;
     const allGenresChecked = document.getElementById("all").checked;
+    const genreCheckboxes = Array.from(document.querySelectorAll("input[name='genres']:checked"));
+    const selectedGenres = genreCheckboxes.map(checkbox => checkbox.value);
+    const dateFrom = document.getElementById("dateFrom").value;
+    const dateTo = document.getElementById("dateTo").value;
     const resultadosDiv = document.getElementById("resultados");
     resultadosDiv.innerHTML = '';
 
     let pelisFiltradas = pelis;
 
     if (text) {
-        if (titleChecked) {
-            pelisFiltradas = pelisFiltradas.filter(peli => peli.Title.toLowerCase().includes(text));
-        }
-        if (directorChecked) {
-            pelisFiltradas = pelisFiltradas.filter(peli => peli.Director.toLowerCase().includes(text));
-        }
-        if (actorsChecked) {
-            pelisFiltradas = pelisFiltradas.filter(peli => peli.Actors.toLowerCase().includes(text));
-        }
-    }else{
         pelisFiltradas = pelisFiltradas.filter(peli => {
-            return (titleChecked || peli.Title.toLowerCase().includes(text)) || 
-                   (directorChecked || peli.Director.toLowerCase().includes(text)) || 
-                   (actorsChecked || peli.Actors.toLowerCase().includes(text));
+            return (
+                (titleChecked && peli.Title.toLowerCase().includes(text)) ||
+                (directorChecked && peli.Director.toLowerCase().includes(text)) ||
+                (actorsChecked && peli.Actors.toLowerCase().includes(text))
+            );
         });
     }
 
     if (selectedCountry !== "allCountries") {
-        pelisFiltradas = pelisFiltradas.filter(peli => peli.Country.some(country => selectedCountry.includes(country)));
+        pelisFiltradas = pelisFiltradas.filter(peli => peli.Country.includes(selectedCountry));
     }
 
-    if (allGenresChecked) {
-        pelisFiltradas = pelisFiltradas;
-    }else{
-        //me faltan los generos concretos
+    if (!allGenresChecked && selectedGenres.length > 0) {
+        pelisFiltradas = pelisFiltradas.filter(peli => 
+            selectedGenres.every(genre => peli.Genre.includes(genre))
+        );
     }
 
-    //falta lo de la fecha
+    if (dateFrom) {
+        const fromDate = new Date(dateFrom);
+        pelisFiltradas = pelisFiltradas.filter(peli => new Date(peli.Released) >= fromDate);
+    }
+    if (dateTo) {
+        const toDate = new Date(dateTo);
+        pelisFiltradas = pelisFiltradas.filter(peli => new Date(peli.Released) <= toDate);
+    }
 
     if (pelisFiltradas.length === 0) {
-        resultadosDiv.innerHTML = "No se encontraron películas.";
+        resultadosDiv.innerHTML = "<p>No se encontraron películas.</p>";
     } else {
         cargarPelis(pelisFiltradas);
     }
 }
-
-
 
 //cosas de las peliculas
 //resultado de la busqueda
