@@ -33,7 +33,7 @@ window.onload =
         allCheckbox.checked = true;
         allCheckbox.addEventListener("change", () => {
             const checkboxes = document.querySelectorAll("input[name='genres']:not(#all)");
-            checkboxes.forEach(checkbox => checkbox.checked = false);
+            checkboxes.forEach(checkbox => checkbox.checked = allCheckbox.checked);
         });
         allLabel.textContent = "Todos los géneros";
     
@@ -50,6 +50,12 @@ window.onload =
             genderInput.addEventListener("change", () => {
                 if (genderInput.checked) {
                     document.getElementById("all").checked = false;
+                } else {
+                    const checkboxes = document.querySelectorAll("input[name='genres']:not(#all)");
+                    const allUnchecked = Array.from(checkboxes).every(checkbox => !checkbox.checked);
+                    if (allUnchecked) {
+                        document.getElementById("all").checked = true;
+                    }
                 }
             });
             genderLabel.textContent = genero;
